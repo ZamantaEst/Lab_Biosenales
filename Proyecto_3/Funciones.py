@@ -80,17 +80,44 @@ def plot_sencillo(senal,name):
 def evaluar_normalidad(vector,text):
   stat, p = stats.shapiro(vector)
   if p > 0.05:
-    return f"Los datos {text} siguen  una distribución normal."
+    return f" No se rechaza H0. Los datos {text} siguen  una distribución normal."
   else:
-    return f"Los datos {text} NO siguen una distribución normal."
+    return f"Se rechaza H0. Los datos {text} NO siguen una distribución normal."
   
 def graficas_normalidad(vector,name):
-    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(9, 4))
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(10, 3.8))
     plt.suptitle("Comprobación normalidad " + name)
-    axes[0].hist(vector, bins=20)           ; axes[0].set_title('Histograma')
+    axes[0].hist(vector, bins=20)           ;   axes[0].set_title('Histograma')
     stats.probplot(vector, plot=axes[1])    ;   axes[1].set_title('Q-Q plot de fMP para AFIB')
     plt.show()
    
+def evaluar_homocedasticidad(vector1, vector2, text1, text2):
+  stat, p = stats.levene(vector1, vector2)
+  if p > 0.05:
+    return f"No se rechaza H0. Los datos {text1} y {text2} son homocedasticos, es decir, tienen varianzas iguales."
+  else:
+    return f"Se rechaza H0. Los datos {text1} y {text2} NO son homocedasticos, tienen varianzas distintas."
+  
+def graficas_homocedasticidad(vector1, vector2, name1, name2):
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(10, 3.8))
+    plt.suptitle("Comprobación homocedasticidad " + name1 + " y " + name2)
+    axes[0].scatter(vector1, vector2)                            ;   axes[0].set_title('Scatter')
+    axes[1].boxplot([vector1, vector2], labels=[name1, name2])  ;    axes[1].set_title('Bloxplot')
+    plt.show()
+
+def Rango_Intercuartil(senal):
+  senal = np.sort(senal)
+  Q1 = np.percentile(senal, 25)
+  Q3 = np.percentile(senal, 75)
+  IQR = Q3 - Q1
+  return IQR
+
+def Mann_Whitney_U(senal1, senal2,name1, name2):
+  stat, p = stats.mannwhitneyu(senal1, senal2)
+  if p > 0.05:
+    return f"No se rechazar la hipótesis nula H0, las diferencias entre las muestras {name1} y {name2} \n no son estadísticamente significativas en términos de medianas."
+  else:
+    return f"Se rechaza H0. Hay una diferencia significativa entre las muestras {name1} y {name2} en términos de medianas."
 
 
 def prueba_saludar(nombre):
